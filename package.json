@@ -1,0 +1,17 @@
+{
+  "name": "bistrot-georges-restaurant-app",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "client",
+    "api"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=client\" \"npm run dev --workspace=api\"",
+    "build": "npm run build --workspace=client",
+    "start": "npm start --workspace=api"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
