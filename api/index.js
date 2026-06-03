@@ -45,6 +45,15 @@ app.get('/api/orders', (req, res) => {
   res.json(orders);
 });
 
+app.get('/api/orders/:id', (req, res) => {
+  const order = orders.find(o => o.id === req.params.id);
+  if (order) {
+    res.json(order);
+  } else {
+    res.status(404).json({ error: 'Order not found' });
+  }
+});
+
 // Stripe Checkout Session
 app.post('/api/create-checkout-session', async (req, res) => {
   const { items } = req.body;

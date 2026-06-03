@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import { Clock, CheckCircle, Package, Truck, Utensils, ArrowLeft } from 'lucide-react';
+import axios from 'axios';
+import { Clock, CheckCircle, Package, Truck, Utensils, ArrowLeft, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const socket = io();
@@ -9,6 +10,8 @@ const socket = io();
 const OrderTracking = () => {
   const { orderId } = useParams();
   const [status, setStatus] = useState('Pending');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const statuses = [
     { label: 'Pending', icon: Clock },
@@ -18,6 +21,20 @@ const OrderTracking = () => {
   ];
 
   useEffect(() => {
+    const fetchOrderStatus = async () => {
+      try {
+        const response = await axios.get(`/api/orders/${orderId}`);
+        setStatus(response.data.status);
+      } catch (err) {
+        console.error('Error fetching order status:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrderStatus();
+
     socket.on('order-status-changed', (data) => {
       if (data.orderId === orderId) {
         setStatus(data.status);
@@ -30,6 +47,25 @@ const OrderTracking = () => {
   }, [orderId]);
 
   const currentStatusIndex = statuses.findIndex(s => s.label === status);
+
+  if (loading) return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
+      <div className="bg-white p-12 rounded-3xl shadow-xl text-center max-w-md w-full">
+        <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-6" />
+        <h2 className="text-3xl font-bold text-primary mb-2">Order Not Found</h2>
+        <p className="text-gray-500 mb-8">We couldn't find an order with that ID. Please check and try again.</p>
+        <Link to="/track" className="bg-primary text-white px-8 py-4 rounded-2xl font-bold hover:bg-black block">
+          Try Another ID
+        </Link>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
