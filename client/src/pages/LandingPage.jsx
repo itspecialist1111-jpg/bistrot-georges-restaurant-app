@@ -10,6 +10,7 @@ const LandingPage = () => {
         <h1 className="text-2xl font-bold text-primary italic">Bistrot Georges</h1>
         <div className="flex gap-6 items-center">
           <Link to="/menu" className="text-gray-600 hover:text-accent font-medium">Menu</Link>
+          <Link to="/track" className="text-gray-600 hover:text-accent font-medium">Track Order</Link>
           <Link to="/admin" className="text-gray-600 hover:text-accent font-medium">Admin</Link>
           <Link to="/cart" className="relative">
             <ShoppingBag className="w-6 h-6 text-primary" />
